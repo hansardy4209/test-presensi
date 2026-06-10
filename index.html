@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Input Data Siswa</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',sans-serif;
+}
+
+body{
+    background:#f4f6f9;
+    min-height:100vh;
+    padding:20px;
+}
+
+.container{
+    max-width:900px;
+    margin:auto;
+}
+
+.card{
+    background:#fff;
+    padding:30px;
+    border-radius:15px;
+    box-shadow:0 5px 20px rgba(0,0,0,.1);
+}
+
+h1{
+    text-align:center;
+    color:#0d6efd;
+    margin-bottom:10px;
+}
+
+.subtitle{
+    text-align:center;
+    color:#666;
+    margin-bottom:25px;
+}
+
+.row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:15px;
+}
+
+.form-group{
+    margin-bottom:15px;
+}
+
+label{
+    display:block;
+    margin-bottom:5px;
+    font-weight:600;
+}
+
+input,
+select,
+textarea{
+    width:100%;
+    padding:12px;
+    border:1px solid #ddd;
+    border-radius:8px;
+    font-size:14px;
+}
+
+input:focus,
+select:focus,
+textarea:focus{
+    outline:none;
+    border-color:#0d6efd;
+    box-shadow:0 0 8px rgba(13,110,253,.2);
+}
+
+textarea{
+    min-height:100px;
+    resize:vertical;
+}
+
+button{
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:8px;
+    background:#0d6efd;
+    color:#fff;
+    font-size:16px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#0b5ed7;
+}
+
+#preview{
+    margin-top:10px;
+    max-width:150px;
+    border-radius:10px;
+    border:1px solid #ddd;
+}
+
+#status{
+    margin-top:15px;
+    text-align:center;
+    font-weight:bold;
+}
+
+.footer{
+    text-align:center;
+    margin-top:20px;
+    color:#777;
+}
+
+@media(max-width:768px){
+    .row{
+        grid-template-columns:1fr;
+    }
+}
+</style>
+
+</head>
+<body>
+
+<div class="container">
+
+    <div class="card">
+
+        <h1>FORM DATA SISWA</h1>
+        <p class="subtitle">
+            Sistem Pendataan Siswa Terhubung Google Sheet
+        </p>
+
+        <form id="formSiswa">
+
+            <div class="row">
+
+                <div class="form-group">
+                    <label>NIS</label>
+                    <input type="text" id="nis" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Nama Lengkap</label>
+                    <input type="text" id="nama" required>
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div class="form-group">
+                    <label>Jurusan</label>
+                    <select id="jurusan" required>
+                        <option value="">-- Pilih Jurusan --</option>
+                        <option value="TKR">TKR</option>
+                        <option value="TKJ">TKJ</option>
+                        <option value="DKV">DKV</option>
+                        <option value="AK">AK</option>
+                        <option value="TSM">TSM</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Kelas</label>
+                    <select id="kelas" required>
+                        <option value="">-- Pilih Jurusan Terlebih Dahulu --</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div class="form-group">
+                    <label>Jenis Kelamin</label>
+                    <select id="jk">
+                        <option>Laki-laki</option>
+                        <option>Perempuan</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>No HP</label>
+                    <input type="text" id="nohp">
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div class="form-group">
+                    <label>Tempat Lahir</label>
+                    <input type="text" id="tempat_lahir">
+                </div>
+
+                <div class="form-group">
+                    <label>Tanggal Lahir</label>
+                    <input type="date" id="tanggal_lahir">
+                </div>
+
+            </div>
+
+            <div class="form-group">
+                <label>Alamat</label>
+                <textarea id="alamat"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Nama Orang Tua</label>
+                <input type="text" id="ortu">
+            </div>
+
+            <div class="form-group">
+                <label>Foto Siswa</label>
+                <input type="file"
+                       id="foto"
+                       accept="image/*">
+            </div>
+
+            <div class="form-group">
+                <img id="preview"
+                     src=""
+                     style="display:none;">
+            </div>
+
+            <button type="submit">
+                Simpan Data
+            </button>
+
+        </form>
+
+        <p id="status"></p>
+
+        <div class="footer">
+            © Sistem Pendataan Siswa
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+const scriptURL = "https://script.google.com/macros/s/AKfycbzR9Bj-BwT3c39S6iLTfzjCng55O6__eQyZ7xrp5omx-KuDqRikfDu7XXtNPdfZYdBJ/exec";
+
+/* DATA KELAS */
+
+const dataKelas = {
+
+TKR:[
+"X TKR 1",
+"X TKR 2",
+"X TKR 3",
+"XI TKR 1",
+"XI TKR 2",
+"XI TKR 3",
+"XII TKR 1",
+"XII TKR 2",
+"XII TKR 3"
+],
+
+TKJ:[
+"X TKJ 1",
+"X TKJ 2",
+"X TKJ 3",
+"XI TKJ 1",
+"XI TKJ 2",
+"XI TKJ 3",
+"XII TKJ 1",
+"XII TKJ 2",
+"XII TKJ 3"
+],
+
+DKV:[
+"X DKV 1",
+"X DKV 2",
+"X DKV 3",
+"XI DKV 1",
+"XI DKV 2",
+"XI DKV 3",
+"XII DKV 1",
+"XII DKV 2",
+"XII DKV 3"
+],
+
+AK:[
+"X AK",
+"XI AK",
+"XII AK"
+],
+
+TSM:[
+"X TSM 1",
+"X TSM 2",
+"XI TSM 1",
+"XI TSM 2",
+"XII TSM 1",
+"XII TSM 2"
+]
+
+};
+
+/* DROPDOWN KELAS */
+
+document.getElementById("jurusan")
+.addEventListener("change", function(){
+
+    const jurusan = this.value;
+    const kelas = document.getElementById("kelas");
+
+    kelas.innerHTML =
+    '<option value="">-- Pilih Kelas --</option>';
+
+    if(dataKelas[jurusan]){
+
+        dataKelas[jurusan].forEach(item=>{
+
+            const option =
+            document.createElement("option");
+
+            option.value = item;
+            option.textContent = item;
+
+            kelas.appendChild(option);
+
+        });
+
+    }
+
+});
+
+/* PREVIEW FOTO */
+
+document.getElementById("foto")
+.addEventListener("change", function(){
+
+    const file = this.files[0];
+
+    if(file){
+
+        const reader = new FileReader();
+
+        reader.onload = function(e){
+
+            const preview =
+            document.getElementById("preview");
+
+            preview.src = e.target.result;
+            preview.style.display = "block";
+
+        };
+
+        reader.readAsDataURL(file);
+
+    }
+
+});
+
+/* SUBMIT FORM */
+
+document.getElementById("formSiswa")
+.addEventListener("submit", async function(e){
+
+    e.preventDefault();
+
+    const btn =
+    document.querySelector("button");
+
+    btn.disabled = true;
+    btn.innerHTML = "Menyimpan...";
+
+    let fotoBase64 = "";
+
+    const foto =
+    document.getElementById("foto").files[0];
+
+    if(foto){
+
+        fotoBase64 =
+        await new Promise(resolve=>{
+
+            const reader =
+            new FileReader();
+
+            reader.onload =
+            ()=>resolve(reader.result);
+
+            reader.readAsDataURL(foto);
+
+        });
+
+    }
+
+    const data = {
+
+        nis:
+        document.getElementById("nis").value,
+
+        nama:
+        document.getElementById("nama").value,
+
+        jurusan:
+        document.getElementById("jurusan").value,
+
+        kelas:
+        document.getElementById("kelas").value,
+
+        jk:
+        document.getElementById("jk").value,
+
+        nohp:
+        document.getElementById("nohp").value,
+
+        tempat_lahir:
+        document.getElementById("tempat_lahir").value,
+
+        tanggal_lahir:
+        document.getElementById("tanggal_lahir").value,
+
+        alamat:
+        document.getElementById("alamat").value,
+
+        ortu:
+        document.getElementById("ortu").value,
+
+        foto:
+        fotoBase64
+
+    };
+
+    try{
+
+        await fetch(scriptURL,{
+            method:"POST",
+            body:JSON.stringify(data)
+        });
+
+        document.getElementById("status")
+        .innerHTML =
+        "✅ Data berhasil disimpan";
+
+        document.getElementById("status")
+        .style.color = "green";
+
+        document.getElementById("formSiswa")
+        .reset();
+
+        document.getElementById("preview")
+        .style.display = "none";
+
+    }
+    catch(err){
+
+        document.getElementById("status")
+        .innerHTML =
+        "❌ Gagal menyimpan data";
+
+        document.getElementById("status")
+        .style.color = "red";
+
+    }
+
+    btn.disabled = false;
+    btn.innerHTML = "Simpan Data";
+
+});
+
+</script>
+
+</body>
+</html>
